@@ -1,3 +1,5 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '3.5.6'
@@ -46,4 +48,32 @@ protobuf {
             task.plugins { grpc {} }
         }
     }
+}
+
+springBoot {
+    // keeps the build reproducible; layers are extracted by layertools
+    buildInfo()
+}
+
+// Extract the layered JAR into build/layers/
+tasks.register('extractBootLayers', Exec) {
+    group = 'build'
+    description = 'Extract Spring Boot layered JAR into build/layers for Docker layering.'
+
+    dependsOn tasks.named('bootJar')
+
+    // Output directory for the extracted layers
+    def outDir = layout.buildDirectory.dir('layers')
+
+    doFirst {
+        mkdir(outDir.get().asFile)
+    }
+
+    // Run the Spring Boot "layertools" extractor in that directory
+    workingDir outDir.get().asFile
+    commandLine 'java',
+            '-Djarmode=layertools',
+            '-jar',
+            tasks.named('bootJar', BootJar).get().archiveFile.get().asFile.absolutePath,
+            'extract'
 }
