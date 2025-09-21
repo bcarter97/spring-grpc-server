@@ -1,0 +1,13 @@
+services:
+  spring-grpc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ghcr.io/bcarter97/spring-grpc-server:latest
+    environment:
+      JAVA_TOOL_OPTIONS: "-XX:MaxRAMPercentage=70"
+      # SPRING_PROFILES_ACTIVE: "prod"   # (optional)
+    ports:
+      - "4770:4770"   # host:container (gRPC)
+    user: "65532:65532"  # distroless:nonroot UID/GID
+    restart: on-failure

@@ -50,6 +50,10 @@ protobuf {
     }
 }
 
+tasks.named('bootJar') {
+    archiveFileName = 'app.jar'
+}
+
 springBoot {
     // keeps the build reproducible; layers are extracted by layertools
     buildInfo()
