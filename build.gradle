@@ -5,6 +5,8 @@ plugins {
     id 'org.springframework.boot' version '3.5.6'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.google.protobuf' version '0.9.5'
+    id 'com.diffplug.spotless' version '6.25.0'
+    id 'net.ltgt.errorprone' version '4.1.0'
 }
 
 group = 'io.github.bcarter97'
@@ -30,13 +32,39 @@ dependencies {
     annotationProcessor 'javax.annotation:javax.annotation-api:1.3.2'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    errorprone 'com.google.errorprone:error_prone_core:2.30.0'
+    errorprone 'com.uber.nullaway:nullaway:0.11.2'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+// Spotless formatting switched to google-java-format (widely adopted)
+spotless {
+    java {
+        googleJavaFormat('1.22.0')
+        // google-java-format already handles import sorting; keep only cleanup helpers
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+// Lean Error Prone / NullAway setup
+tasks.withType(JavaCompile).configureEach {
+    options.errorprone {
+        option("NullAway:AnnotatedPackages", "io.github.bcarter97")
+        error("NullAway")
+        excludedPaths = ".*/build/generated/.*"
+    }
+    options.compilerArgs += ['-Werror']
+}
+
+// Keep spotlessCheck in overall check
+tasks.named('check') { dependsOn(tasks.named('spotlessCheck')) }
 
 protobuf {
     protoc { artifact = 'com.google.protobuf:protoc:3.25.3' }          // protoc version
