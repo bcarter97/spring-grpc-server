@@ -9,13 +9,14 @@ public class MetadataInterceptor implements ServerInterceptor {
   public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
       ServerCall<ReqT, RespT> call, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
 
-    Context ctx = MetadataContext.enrichFrom(headers);
+    GrpcMetadata grpcMetadata = GrpcMetadata.fromGrpc(headers);
+    Context ctx = MetadataContext.with(grpcMetadata);
 
     System.out.println(
         "Inbound method="
             + call.getMethodDescriptor().getFullMethodName()
-            + " headerKeys="
-            + headers.keys());
+            + " grpcMetadata="
+            + grpcMetadata);
 
     return Contexts.interceptCall(ctx, call, headers, next);
   }

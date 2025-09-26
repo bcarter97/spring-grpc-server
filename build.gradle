@@ -50,6 +50,8 @@ spotless {
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
+        target 'src/main/java/**/*.java', 'src/test/java/**/*.java'
+        targetExclude 'build/generated/**/*.java', 'build/generated/sources/**/*.java'
     }
 }
 

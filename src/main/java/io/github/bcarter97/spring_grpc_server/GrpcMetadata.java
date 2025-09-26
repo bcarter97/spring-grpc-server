@@ -22,10 +22,12 @@ public final class GrpcMetadata {
   private static Map<String, Optional<String>> normalize(Map<String, Optional<String>> source) {
     return source.entrySet().stream()
         .filter(e -> !e.getKey().endsWith("-bin"))
-        .map(e -> Map.entry(e.getKey().toLowerCase(Locale.ROOT), e.getValue()))
         .collect(
             Collectors.toMap(
-                Map.Entry::getKey, Map.Entry::getValue, (a, b) -> b, LinkedHashMap::new));
+                e -> e.getKey().toLowerCase(Locale.ROOT),
+                Map.Entry::getValue,
+                (a, b) -> b,
+                LinkedHashMap::new));
   }
 
   public static GrpcMetadata empty() {
