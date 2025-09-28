@@ -61,7 +61,7 @@ public class HealthService extends HealthGrpc.HealthImplBase {
 
   @Override
   public void watch(HealthCheckRequest req, StreamObserver<HealthCheckResponse> resp) {
-    logger.debug("Health watch requested for service '{}', not implemented", req.getService());
+    logger.error("Health watch requested for service '{}', not implemented", req.getService());
     resp.onError(Status.UNIMPLEMENTED.asRuntimeException());
   }
 }
